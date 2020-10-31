@@ -26,13 +26,13 @@
 #include <exec/types.h>
 #endif /* EXEC_TYPES_H */
 
-/* CH_SpritePort structures can be stacked vertically to multiplex sprites */
-struct CH_SpritePort
+/* VFX_SpritePort structures can be stacked vertically to multiplex sprites */
+struct VFX_SpritePort
 {
-    struct MinNode CH_SprNode;
-    struct BitMap *CH_bm;
-    struct CH_Coordinate CH_Position;
-    ULONG CH_SprFlags;
+    struct MinNode VFX_SprNode;
+    struct BitMap *VFX_bm;
+    struct VFX_Coordinate VFX_Position;
+    ULONG VFX_SprFlags;
 };
 
 /* Linked sprites limit the number of sprite channels but offer more color. */

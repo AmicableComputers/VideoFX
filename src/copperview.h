@@ -34,59 +34,59 @@
 extern struct Custom custom;
 
 /* assume big endianness on 68k code */
-struct CH_Coordinate
+struct VFX_Coordinate
 {
     UWORD y;
     UWORD x;
 };
 
-union CH_CoordSort
+union VFX_CoordSort
 {
-    struct CH_Coordinate CH_Point;
-    ULONG CH_Item;
+    struct VFX_Coordinate VFX_Point;
+    ULONG VFX_Item;
 };
 
 /* Copper Wait is implied at the start of the series */
-struct CH_Series
+struct VFX_Series
 {
-    struct MinNode CH_Node;
-    struct hook *CH_Render;
-    union CH_CoordSort CH_CS;
-    UBYTE CH_VertWrap;
-    UBYTE CH_HorizWrap;
-    UWORD CH_SeriesFlags;
-    ULONG CH_WordCount;
-    UWORD CH_Moves[];
+    struct MinNode VFX_Node;
+    struct hook *VFX_Render;
+    union VFX_CoordSort VFX_CS;
+    UBYTE VFX_VertWrap;
+    UBYTE VFX_HorizWrap;
+    UWORD VFX_SeriesFlags;
+    ULONG VFX_WordCount;
+    UWORD VFX_Moves[];
 };
 
-/* values for CH_SeriesFlags */
+/* values for VFX_SeriesFlags */
 /* If the Odd and Even flags are both 0 structure is ignored */
 #define CSB_EVEN 0
 #define CSF_EVEN 1L<<CSB_EVEN
 #define CSB_ODD 1
 #define CSF_ODD 1L<<CSB_ODD
 
-struct CH_Region
+struct VFX_Region
 {
-    struct MinNode CH_RegionQueue;
-    struct MinList CH_Cargo;
+    struct MinNode VFX_RegionQueue;
+    struct MinList VFX_Cargo;
 };
 
-struct CH_ViewPort
+struct VFX_ViewPort
 {
-    struct MinNode CH_vp;
+    struct MinNode VFX_vp;
     /* Backlink */
-    IPTR CH_MasterScreen;
-    IPTR CH_ColorTable;
-    struct CH_Series *CH_CopperSeriesEven;
-    struct CH_Series *CH_CopperSeriesOdd;
-    struct hook *CH_PortRenderEven;
-    struct hook *CH_PortRenderOdd;
-    struct hook *CH_Color;
-    ULONG CH_ViewPortFlags;
-    ULONG CH_ScreenMode;
-    struct BitMap *CH_pf0;
-    struct BitMap *CH_pf1;
+    IPTR VFX_MasterScreen;
+    IPTR VFX_ColorTable;
+    struct VFX_Series *VFX_CopperSeriesEven;
+    struct VFX_Series *VFX_CopperSeriesOdd;
+    struct hook *VFX_PortRenderEven;
+    struct hook *VFX_PortRenderOdd;
+    struct hook *VFX_Color;
+    ULONG VFX_ViewPortFlags;
+    ULONG VFX_ScreenMode;
+    struct BitMap *VFX_pf0;
+    struct BitMap *VFX_pf1;
     UWORD PxOffset0, PyOffset0;
     UWORD PxOffset1, PyOffset1;
 };
@@ -94,33 +94,33 @@ struct CH_ViewPort
 #define VPB_DUALPF 0
 #define VPF_DUALPF 1L<<VPB_DUALPF
 
-struct CH_SpriteTable
+struct VFX_SpriteTable
 {
     /* Maximum number of sprites */
-    UBYTE CH_NumSprites;
-    UBYTE CH_SpriteResolution;
-    UWORD CH_SpriteWidth;
-    ULONG CH_SpriteAllocation;
-    /* number of CH_Sprite structs equal to number listed in CH_NumSprites */
-    struct MinList CH_SpriteChannel[];
+    UBYTE VFX_NumSprites;
+    UBYTE VFX_SpriteResolution;
+    UWORD VFX_SpriteWidth;
+    ULONG VFX_SpriteAllocation;
+    /* number of VFX_Sprite structs equal to number listed in VFX_NumSprites */
+    struct MinList VFX_SpriteChannel[];
 };
 
-struct CH_View
+struct VFX_View
 {
-    struct MinList CH_ViewPorts;
+    struct MinList VFX_ViewPorts;
     struct cprlist *LOFCprList;
     struct cprlist *SHFCprList;
     WORD DxOffset, DyOffset;
-    ULONG CH_ViewFlags;
-    struct CH_CopperSeries *CH_MasterLOF;
-    struct CH_CopperSeries *CH_MasterSHF;
+    ULONG VFX_ViewFlags;
+    struct VFX_CopperSeries *VFX_MasterLOF;
+    struct VFX_CopperSeries *VFX_MasterSHF;
     /* Can be NULL if sprites are unsupported in current screenmode */
-    struct CH_SpriteTable *SprTab;
-    struct hook *CH_RenderSpritesEven;
-    struct hook *CH_RenderSpritesOdd;
+    struct VFX_SpriteTable *SprTab;
+    struct hook *VFX_RenderSpritesEven;
+    struct hook *VFX_RenderSpritesOdd;
 };
 
-/* Values for CH_ViewFlags */
+/* Values for VFX_ViewFlags */
 /* LOF and SHF indicate which copper lists to sort */
 #define CVB_LOF 0
 #define CVF_LOF 1L<<CVB_LOF
