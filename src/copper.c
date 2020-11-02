@@ -20,6 +20,7 @@
 #include <proto/dos.h>
 
 #include <stdlib.h>
+#include <stdarg.h>
 #include <SDI_compiler.h>
 
 #include "copperview.h"

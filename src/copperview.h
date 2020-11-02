@@ -52,19 +52,34 @@ struct VFX_Series
     struct MinNode VFX_Node;
     struct hook *VFX_Render;
     union VFX_CoordSort VFX_CS;
+    /* Private!  Initialize to 0 */
     UBYTE VFX_VertWrap;
     UBYTE VFX_HorizWrap;
+    /* public */
     UWORD VFX_SeriesFlags;
     ULONG VFX_WordCount;
     UWORD VFX_Moves[];
 };
 
 /* values for VFX_SeriesFlags */
-/* If the Odd and Even flags are both 0 structure is ignored */
+/* If the Odd and Even flags are both 0 the series structure is ignored */
 #define CSB_EVEN 0
-#define CSF_EVEN 1L<<CSB_EVEN
+#define CSF_EVEN 1s<<CSB_EVEN
 #define CSB_ODD 1
-#define CSF_ODD 1L<<CSB_ODD
+#define CSF_ODD 1s<<CSB_ODD
+
+#define INITCOPSERIES(name, x, y, flags, renderHook) struct VFX_CopperSeries name \
+{\
+    {\
+        NULL,NULL /* MinNode */ \
+    },\
+    (renderHook),\
+    {(y),(x)}, /* Coordinate */ \
+    0,0, /* initialize private fiedlds to 0 */\
+    (flags),\
+    (sizeof(name)-sizeof(struct VFX_CopperSeries))/sizeof(UWORD), /* word count */
+
+#define ENDCOPSERIES }
 
 struct VFX_Region
 {
@@ -93,6 +108,9 @@ struct VFX_ViewPort
 
 #define VPB_DUALPF 0
 #define VPF_DUALPF 1L<<VPB_DUALPF
+/* indicate no copper palette changes */
+#define VPB_CONSTPALETTE 1
+#define VPF_CONSTPALETTE 1L<<VPB_CONSTPALETTE
 
 struct VFX_SpriteTable
 {
