@@ -4,8 +4,8 @@
 
 #include <exec/types.h>)
 #define __AGA__
-#include <copperview.h>
-#include <spriteport.h>
+#include <videofx/copperview.h>>
+#include <videofx/spriteport.h>>
 
 #include <proto/videofx.h>
 

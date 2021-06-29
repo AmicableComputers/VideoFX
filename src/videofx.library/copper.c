@@ -23,7 +23,7 @@
 #include <stdarg.h>
 #include <SDI_compiler.h>
 
-#include "copperview.h"
+#include <videofx/copperview.h>"
 
 /* prototypes */
 int SortCop();
