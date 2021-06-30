@@ -7,7 +7,7 @@
 */
 
 #ifndef COPPERVIEW_H
-#include <copperview.h>
+#include <videofx/copperview.h>
 #endif /* COPPERVIEW_H */
 
 #ifndef GRAPHICS_BITMAP_H
@@ -29,11 +29,29 @@
 /* VFX_SpritePort structures can be stacked vertically to multiplex sprites */
 struct VFX_SpritePort
 {
-    struct MinNode VFX_SprNode;
-    struct BitMap *VFX_bm;
-    struct VFX_Coordinate VFX_Position;
-    ULONG VFX_SprFlags;
+	struct MinNode VFX_SprNode;
+	struct BitMap *VFX_bm;
+	struct VFX_Coordinate VFX_Position;
+	ULONG VFX_SprFlags;
 };
+
+struct VFX_SpriteChannel
+{
+	ULONG VFX_AllocationSize;
+	struct MinListHeader VFX_SpritePortList;
+};
+
+struct VFX_SpriteTable
+{
+	/* Maximum number of sprites horizontally */
+	UBYTE VFX_MaxSprites;
+	UBYTE VFX_SpriteResolution;
+	UBYTE VFX_SpriteWidth;
+	UBYTE VFX_NumSpriteChannels;
+	/* number of VFX_Sprite structs equal to number listed in VFX_NumSprites */
+	struct VFX_SpriteChannel VFX_SpriteChannels[];
+};
+
 
 /* Linked sprites limit the number of sprite channels but offer more color. */
 /* They also all use the same palette which is useful for horizontalally
@@ -49,7 +67,6 @@ struct VFX_SpritePort
 /* Vertical doubling is mutually exclusive to interlace */
 #define SB_VERT_DOUBLE 3
 #define SF_VERT_DOUBLE 1L<<SB_VERT_DOUBLE
-/* Vertical flipping doesn't work in Blit mode */
 #define SB_VERT_FLIP 4
 #define SF_VERT_FLIP 1L<<SB_VERT_FLIP
 /* Horizontal doubling doesn't work in Blit mode */
@@ -60,7 +77,8 @@ struct VFX_SpritePort
 #define SF_HORIZ_FLIP 1L<<SB_HORIZ_FLIP
 #ifdef __SAGA__
 #define SB_WRAP 16
-#define SF_WRAP 1L<<SB_WRAPPED
+#define SF_WRAP 1L<<SB_WRAP
+/* 4 bitplane mode on SAGA supercedes linked mode so don't use both */
 #define SB_4BITPLANE 17
 #define SF_4BITPLANE 1L<<SB_4BITPLANE
 #endif

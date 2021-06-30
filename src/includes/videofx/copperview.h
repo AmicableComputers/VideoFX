@@ -19,46 +19,40 @@
 #include <exec/lists.h>
 #endif /* EXEC_LISTS_H */
 
-#ifndef GRAPHICS_GFX_H
-#include <graphics/gfx.h>
-#endif /* GRAPHICS_GFX_H */
-
 #ifndef HARDWARE_CUSTOM_H
 #include <hardware/custom.h>
 #endif /* HARDWARE_CUSTOM_H */
 
-#ifndef UTILITY_HOOKS_H
-#include <utility/hooks.h>
-#endif
+#include <SDI_Compiler.h>
+#include <SDI_Hook.h>
 
 extern struct Custom custom;
 
 /* assume big endianness on 68k code */
 struct VFX_Coordinate
 {
-    UWORD y;
-    UWORD x;
+	UWORD y;
+	UWORD x;
 };
 
 union VFX_CoordSort
 {
-    struct VFX_Coordinate VFX_Point;
-    ULONG VFX_Item;
+	struct VFX_Coordinate VFX_Point;
+	ULONG VFX_Item;
 };
 
 /* Copper Wait is implied at the start of the series */
-struct VFX_Series
+struct VFX_CopperSeries
 {
-    struct MinNode VFX_Node;
-    struct hook *VFX_Render;
-    union VFX_CoordSort VFX_CS;
-    /* Private!  Initialize to 0 */
-    UBYTE VFX_VertWrap;
-    UBYTE VFX_HorizWrap;
-    /* public */
-    UWORD VFX_SeriesFlags;
-    ULONG VFX_WordCount;
-    UWORD VFX_Moves[];
+	struct hook *VFX_Render;
+	union VFX_CoordSort VFX_CS;
+	/* Private!  Initialize to 0 */
+	UBYTE VFX_VertWrap;
+	UBYTE VFX_HorizWrap;
+	/* public */
+	UWORD VFX_SeriesFlags;
+	ULONG VFX_WordCount;
+	UWORD VFX_Moves[];
 };
 
 /* values for VFX_SeriesFlags */
@@ -68,82 +62,25 @@ struct VFX_Series
 #define CSB_ODD 1
 #define CSF_ODD 1s<<CSB_ODD
 
-#define INITCOPSERIES(name, x, y, flags, renderHook) struct VFX_CopperSeries name \
+#define INITCOPSERIES(name, x, y, flags, renderHook) \
+struct VFX_CopperSeries name \
 {\
-    {\
-        NULL,NULL /* MinNode */ \
-    },\
-    (renderHook),\
-    {(y),(x)}, /* Coordinate */ \
-    0,0, /* initialize private fiedlds to 0 */\
-    (flags),\
-    (sizeof(name)-sizeof(struct VFX_CopperSeries))/sizeof(UWORD), /* word count */
+	(renderHook),\
+	{(y),(x)}, /* Coordinate */ \
+	0,0, /* initialize private fiedlds to 0 */\
+	(flags),\
+	(sizeof(name)-sizeof(struct VFX_CopperSeries))/sizeof(UWORD), /* word count */
 
-#define ENDCOPSERIES }
+#define ENDCOPSERIES };
 
-struct VFX_Region
+struct VFX_SeriesList
 {
-    struct MinNode VFX_RegionQueue;
-    struct MinList VFX_Cargo;
+	/* Maxemum number of series in entries array */
+	UWORD MaxSeries;
+	/* Current tally of series */
+	UWORD NumSeries;
+	struct VFX_CopperSeries *Entries[];
 };
-
-struct VFX_ViewPort
-{
-    struct MinNode VFX_vp;
-    /* Backlink */
-    IPTR VFX_MasterScreen;
-    IPTR VFX_ColorTable;
-    struct VFX_Series *VFX_CopperSeriesEven;
-    struct VFX_Series *VFX_CopperSeriesOdd;
-    struct hook *VFX_PortRenderEven;
-    struct hook *VFX_PortRenderOdd;
-    struct hook *VFX_Color;
-    ULONG VFX_ViewPortFlags;
-    ULONG VFX_ScreenMode;
-    struct BitMap *VFX_pf0;
-    struct BitMap *VFX_pf1;
-    UWORD PxOffset0, PyOffset0;
-    UWORD PxOffset1, PyOffset1;
-};
-
-#define VPB_DUALPF 0
-#define VPF_DUALPF 1L<<VPB_DUALPF
-/* indicate no copper palette changes */
-#define VPB_CONSTPALETTE 1
-#define VPF_CONSTPALETTE 1L<<VPB_CONSTPALETTE
-
-struct VFX_SpriteTable
-{
-    /* Maximum number of sprites */
-    UBYTE VFX_NumSprites;
-    UBYTE VFX_SpriteResolution;
-    UWORD VFX_SpriteWidth;
-    ULONG VFX_SpriteAllocation;
-    /* number of VFX_Sprite structs equal to number listed in VFX_NumSprites */
-    struct MinList VFX_SpriteChannel[];
-};
-
-struct VFX_View
-{
-    struct MinList VFX_ViewPorts;
-    struct cprlist *LOFCprList;
-    struct cprlist *SHFCprList;
-    WORD DxOffset, DyOffset;
-    ULONG VFX_ViewFlags;
-    struct VFX_CopperSeries *VFX_MasterLOF;
-    struct VFX_CopperSeries *VFX_MasterSHF;
-    /* Can be NULL if sprites are unsupported in current screenmode */
-    struct VFX_SpriteTable *SprTab;
-    struct hook *VFX_RenderSpritesEven;
-    struct hook *VFX_RenderSpritesOdd;
-};
-
-/* Values for VFX_ViewFlags */
-/* LOF and SHF indicate which copper lists to sort */
-#define CVB_LOF 0
-#define CVF_LOF 1L<<CVB_LOF
-#define CVB_SHF 1
-#define CVF_SHF 1L<<CVB_SHF
 
 /* CopWord replaces CMOVE and CopLong is a 32 bit version */
 #define CopWord(reg,val) custom.##reg,(val)
@@ -161,10 +98,11 @@ UWORD bplcon3bits=0;
 #define SetBplcon3bits(val) bplcon3bits=(val) & 0x1cf7
 #define EvenBits(byteComp) ((byteComp)&128)>>4|((byteComp)&32)>>3|((byteComp)&8)>>2|((byteComp)&2)>>1
 #define OddBits(byteComp2) ((byteComp2)&64)>>2|((byteComp2)&16)>>1|((byteComp2)&4)>>1|(byteComp2)&1
-#define CopColor(entry,r,g,b) custom.bplcon3, bplcon3bits|((entry)& 0xe0)<<8, \
-    custom.color[(entry)& 0x1f], (EvenBits(r))<<8|(EvenBits(g))<<4|(EvenBits(b)), \
-    custom.bplcon3, bplcon3bits|((entry)& 0xe0)<<8|1<<9, \
-    custom.color[(entry)& 0x1f], (OddBits(r))<<8|(OddBits(g))<<4|(OddBits(b))
+#define CopColor(entry,r,g,b) \
+	custom.bplcon3, bplcon3bits|((entry)& 0xe0)<<8, \
+	custom.color[(entry)& 0x1f], (EvenBits(r))<<8|(EvenBits(g))<<4|(EvenBits(b)), \
+	custom.bplcon3, bplcon3bits|((entry)& 0xe0)<<8|1<<9, \
+	custom.color[(entry)& 0x1f], (OddBits(r))<<8|(OddBits(g))<<4|(OddBits(b))
 #else
 /* ECS or OCS jams only most significan nybbles */
 #define CopColor(entry,r,g,b) custom.color[entry], ((r)& 0xf0)<<4|((g)& 0xf0)|((b)& 0xf0)>>4
