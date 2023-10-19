@@ -83,9 +83,9 @@ int SortCop(struct VFX_View *view)
                 return 1;
             }
             iterOut=region->VFX_Cargo;
-            iterOut.mlh_tailpred=NULL;
-            iterOut->mlh_head=&iterOut->mlh_tailpred;
-            iterOut->mlh_tail=&iterOut->mlh_head;
+            iterOut.mlh_tail=NULL;
+            iterOut->mlh_head=&iterOut->mlh_tail;
+            iterOut->mlh_tailpred=&iterOut->mlh_head;
             AddTail(regionHead, region);
             previousCoord=VFX_CS.VFX_Sort;
         }
@@ -106,9 +106,9 @@ int SortCop(struct VFX_View *view)
                 /* Yes, merge 2 regions into out */
                 out=(struct VFX_Region *)AllocPooled(regionPool, sizeof(struct VFX_Region));
                 iterOut=out->VFX_Cargo;
-                IterOut.mlh_tailpred=NULL;
-                IterOut->mlh_head=&IterOut->mlh_tailpred;
-                IterOut->mlh_tail=&IterOut->mlh_head;
+                IterOut.mlh_tail=NULL;
+                IterOut->mlh_head=&IterOut->mlh_tail;
+                IterOut->mlh_tailpred=&IterOut->mlh_head;
                 iter=(VFX_Series *)region->VFX_Cargo;
                 iter2=(VFX_Series *)region2->VFX_Cargo;
                 while (!isListEmpty(iter.VFX_Node) && !isListEmpty(iter2.VFX_Node))
@@ -143,16 +143,16 @@ int SortCop(struct VFX_View *view)
         } while (!isListEmpty(regionHead));
         /* move contents to regionHead and clear regionTail*/
         regionHead.mlh_head=regionTail.mlh_head;
-        regionHead.mlh_tail=regionTail.mlh_tail;
-        regionTail.mlh_head=&regionTail.mlh_tailpred;
-        regionTail.mlh_tail=&regionTail.mlh_head;
+        regionHead.mlh_tailpred=regionTail.mlh_tailpred;
+        regionTail.mlh_head=&regionTail.mlh_tail;
+        regionTail.mlh_tailpred=&regionTail.mlh_head;
         /* repeat until there is one region left */
-    } while(regionHead.mlh_head!=regionHead.mlh_tail);
+    } while(regionHead.mlh_head!=regionHead.mlh_tailpred);
 
     /* put results back in the global list */
     iter=((VFX_Series *)regionHead.mlh_head)->VFX_Cargo;
     copperNodes.mlh_head=iter->VFX_Node.mlh_head;
-    copperNodes.mlh_tail=iter->VFX_Node.mlh_tail;
+    copperNodes.mlh_tailpred=iter->VFX_Node.mlh_tailpred;
     FreePool(regionPool);
     return 0;
 }
