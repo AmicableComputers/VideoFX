@@ -51,17 +51,17 @@ int SortCop(struct VFX_View *view)
     iterOut=region->VFX_Cargo;
 
     /* Initialize iterOut, regionHead, and regionTail */
-    iterOut.mlh_tailpred=NULL;
-    iterOut->mlh_head=&iterOut->mlh_tailpred;
-    iterOut->mlh_tail=&iterOut->mlh_head;
+    iterOut.mlh_tail=NULL;
+    iterOut->mlh_head=&iterOut->mlh_tail;
+    iterOut->mlh_tailpred=&iterOut->mlh_head;
     
-    regionHead.mlh_tailpred=NULL;
-    regionHead->mlh_head=&regionHead->mlh_tailpred;
-    regionHead->mlh_tail=&regionHead->mlh_head;
+    regionHead.mlh_tail=NULL;
+    regionHead->mlh_head=&regionHead->mlh_tail;
+    regionHead->mlh_tailpred=&regionHead->mlh_head;
 
-    regionTail.mlh_tailpred=NULL;
-    regionTail->mlh_head=&regionTail->mlh_tailpred;
-    regionTail->mlh_tail=&regionTail->mlh_head;
+    regionTail.mlh_tail=NULL;
+    regionTail->mlh_head=&regionTail->mlh_tail;
+    regionTail->mlh_tailpred=&regionTail->mlh_head;
 
     iter=(VFX_Node)RemHead(copperNodes);
     if (NULL==iter)
