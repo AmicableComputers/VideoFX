@@ -173,9 +173,9 @@ struct VFX_View *CreateView()
     if (NULL==view) return NULL;
     /* Initialize ViewPort list */
     iter=view->VFX_ViewPort;
-    iter.mlh_tailpred=NULL;
-    iter->mlh_head=&iter->mlh_tailpred;
-    iter->mlh_tail=&iter->mlh_head;
+    iter.mlh_tail=NULL;
+    iter->mlh_head=&iter->mlh_tail;
+    iter->mlh_tailpred=&iter->mlh_head;
 #ifndef __RTG__
 #ifdef __SAGA__
 #define NUMSPRITES 16
@@ -196,9 +196,9 @@ struct VFX_View *CreateView()
     for (spriteCount=NUMSPRITES; spriteCount>0; --spriteCount)
     {
         iter=sprites->VFX_SpriteChannel[spriteCount-1];
-        iter.mlh_tailpred=NULL;
-        iter->mlh_head=&iter->mlh_tailpred;
-        iter->mlh_tail=&iter->mlh_head;
+        iter.mlh_tail=NULL;
+        iter->mlh_head=&iter->mlh_tail;
+        iter->mlh_tailpred=&iter->mlh_head;
     }
 #undef NUMSPRITES
 #endif /* RTG undef */
